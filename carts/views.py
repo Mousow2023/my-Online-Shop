@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
 from .models import Cart, CartItem
 
+from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 def _get_cart_id(request):
     cart = request.session.session_key
@@ -63,8 +64,8 @@ def cart(request, total_price=0, quantity=0, cart_items=None):
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
         for item in cart_items:
             total_price += (item.product.price * item.quantity)
-    except Exception as e:
-        raise e
+    except ObjectDoesNotExist:
+        pass
 
     tax = (3 * total_price) / 100
     total = tax + total_price
