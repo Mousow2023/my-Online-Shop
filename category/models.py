@@ -13,8 +13,8 @@ class Category(models.Model):
         verbose_name = "category"
         verbose_name_plural = "catogories"
         
-    # def get_absolute_url(self):
-    #     return reverse("product_by_category", kwargs={"category_slugs": self.slug})
+    def get_absolute_url(self):
+        return reverse("product_by_category", args=[self.slug])
     
 
 

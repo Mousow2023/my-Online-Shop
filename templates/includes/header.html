@@ -40,16 +40,16 @@
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="{% url 'store_index' %}">All Products</a> 
 							{% for category in links %}
-								<a class="dropdown-item" href="{% url 'product_by_category' category.slug %}">{{ category.category_name }}</a> 
+								<a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.category_name }}</a> 
 							{% endfor %}
 						</div>
 					</div>  <!-- category-wrap.// -->
 				</div> <!-- col.// -->
 				<a href="{% url 'store_index' %}" class="btn btn-outline-primary">Store</a>
 				<div class="col-lg  col-md-6 col-sm-12 col">
-					<form action="#" class="search">
+					<form action="{% url 'search' %}" class="search" method="GET">
 						<div class="input-group w-100">
-								<input type="text" class="form-control" style="width:60%;" placeholder="Search">
+								<input type="text" class="form-control" style="width:60%;" placeholder="Search" name="keyword">
 								
 								<div class="input-group-append">
 									<button class="btn btn-primary" type="submit">
