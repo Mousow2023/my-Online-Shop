@@ -63,6 +63,3 @@ def search(request):
 
     # testing
     return render(request, "store/store.html", context)
-
-def test(request):
-    pass
