@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "dbbackup",  # django-dbbackup"
+
     "category",
     "accounts",
     "store",
@@ -52,6 +54,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / "backup"}
 
 ROOT_URLCONF = "moushop.urls"
 
@@ -143,6 +148,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 from django.contrib.messages import constants as messages
+from .secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
@@ -152,5 +158,5 @@ MESSAGE_TAGS = {
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "sowmoustapha0730@gmail.com"
-EMAIL_HOST_PASSWORD = "yahzxwkfmgwuxrjj"
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
