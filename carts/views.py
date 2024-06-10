@@ -180,6 +180,7 @@ def cart(request, total_price=0, quantity=0, cart_items=None):
 
         for item in cart_items:
             total_price += (item.product.price * item.quantity)
+            quantity += item.quantity
     except ObjectDoesNotExist:
         pass
 
