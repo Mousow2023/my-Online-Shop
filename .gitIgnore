@@ -174,4 +174,7 @@ cython_debug/
 # Ignore secrets file
 secrets.py
 
+# Ignore database backup
+backup/
+
 # End of https://www.toptal.com/developers/gitignore/api/django

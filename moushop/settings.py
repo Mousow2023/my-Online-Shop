@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_crontab", # django-crontab
     "dbbackup",  # django-dbbackup"
 
     "category",
@@ -57,6 +58,11 @@ MIDDLEWARE = [
 
 DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
 DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / "backup"}
+
+CRONJOBS = [
+    ('0 0 * * *', 'moushop.cron.my_scheduled_job')
+]
+
 
 ROOT_URLCONF = "moushop.urls"
 
