@@ -74,36 +74,34 @@ def login(request):
                 if is_cart_item:
                     cart_item = CartItem.objects.filter(cart=cart)
 
+                    # Get the product variations by cart id
+                    product_variation_list = []
                     for item in cart_item:
-                        item.user = user
-                        item.save()
+                        product_variation_list.append(list(item.variations.all()))
 
-                    # # Get the product variations by cart id
-                    # product_variation_list = []
-                    # for item in cart_item:
-                    #     product_variation_list.append(list(item.variations.all()))
+                    # Get the existing variations of the cart items of the user
+                    cart_item = CartItem.objects.filter(user=user)
+                    existing_variations_list = []
+                    cart_item_id_list = []
+                    for item in cart_item:
+                        existing_variations_list.append(list(item.variations.all()))
+                        cart_item_id_list.append(item.id)
 
-
-                    # # Get the existing variations of the cart items of the user
-                    # cart_item = CartItem.objects.filter(user=user)
-                    # existing_variations_list = []
-                    # cart_item_id_list = []
-                    # for item in cart_item:
-                    #     existing_variations_list.append(list(item.variations.all()))
-                    #     cart_item_id_list.append(item.id)
-                        
-                    # for variation in product_variation_list:
-                    #     index = existing_variations_list.index(variation)
-                    #     item_id = cart_item_id_list[index]
-                    #     item = CartItem.objects.get(id=item_id)
-                    #     item.quantity += 1
-                    #     item.user = user
-                    #     item.save()
-                    # else:
-                    #     cart_item = CartItem.objects.create(cart=cart)
-                    #     for item in cart_item:
-                    #         item.user = user
-                    #         item.save()
+                    for var in product_variation_list:
+                        if var in existing_variations_list:
+                            index = existing_variations_list.index(var)
+                            item_id = cart_item_id_list[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user = user
+                            item.save()
+                        else:
+                            for var in product_variation_list:
+                                if var not in existing_variations_list:
+                                    cart_item = CartItem.objects.filter(cart=cart, variations__in=var)
+                                    for item in cart_item:
+                                        item.user = user
+                                        item.save() 
             except:
                 pass
             auth.login(request, user)
