@@ -43,6 +43,13 @@ def payments(request):
         order_product.product_price = item.product.price
         order_product.is_ordered = True
         order_product.save()
+
+        # Get the variations of the ordered product
+        cart_item = CartItem.objects.get(id=item.id)
+        product_variations = cart_item.variations.all()
+        ordered_product = OrderProduct.objects.get(id=order_product.id)
+        ordered_product.variation.set(product_variations)
+        ordered_product.save()
         
     return render(request, "orders/payments.html")
 
