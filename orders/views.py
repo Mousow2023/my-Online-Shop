@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from carts.models import Cart, CartItem
+from carts.models import CartItem
 from .forms import OrderForm
-from .models import Order, Payment
+from store.models import Product
+from .models import Order, Payment, OrderProduct
+from django.contrib import messages
 import datetime
 import json
 
@@ -28,6 +30,20 @@ def payments(request):
     order.is_ordered = True
     order.save()
 
+    # Move cart items to OrderProduct Model
+    cart_items  = CartItem.objects.filter(user=request.user)
+
+    for item in cart_items:
+        order_product = OrderProduct()
+        order_product.order_id = order.id
+        order_product.payment = payment
+        order_product.user_id = request.user.id
+        order_product.product_id = item.product_id
+        order_product.quantity = item.quantity
+        order_product.product_price = item.product.price
+        order_product.is_ordered = True
+        order_product.save()
+        
     return render(request, "orders/payments.html")
 
 @login_required(login_url="login")
