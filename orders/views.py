@@ -1,14 +1,33 @@
 from django.shortcuts import render, redirect
 from carts.models import Cart, CartItem
 from .forms import OrderForm
-from .models import Order
+from .models import Order, Payment
 import datetime
+import json
 
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+@login_required(login_url="login")
 def payments(request):
+    body = json.loads(request.body)
+    order = Order.objects.get(user=request.user, is_ordered=False, order_number=body["orderID"])
+
+    # Store transaction details inside payment model
+    payment = Payment.objects.create(
+        user = request.user,
+        payment_id = body["transactionID"],
+        payment_method = body["paymentMethod"],
+        amount_paid = order.order_total,
+        status = body["status"],
+    )
+
+    # Update the order model
+    order.payment = payment
+    order.is_ordered = True
+    order.save()
+
     return render(request, "orders/payments.html")
 
 @login_required(login_url="login")
