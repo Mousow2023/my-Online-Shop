@@ -50,7 +50,18 @@ def payments(request):
         ordered_product = OrderProduct.objects.get(id=order_product.id)
         ordered_product.variation.set(product_variations)
         ordered_product.save()
+
+        # Decrease stock of the sold products
+        product = Product.objects.get(id=item.product_id)
+        if product.stock >= item.quantity:
+            product.stock -= item.quantity
+            product.save()
+        else:
+            messages.error(request, "The stock you're triying to purchase is not available")
         
+    # Clear Cart
+    CartItem.objects.filter(user=request.user).delete()
+    
     return render(request, "orders/payments.html")
 
 @login_required(login_url="login")
