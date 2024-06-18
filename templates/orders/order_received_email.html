@@ -1,0 +1,7 @@
+{% autoescape off %}
+    Hello {{ user.first_name }}
+    Votre commande a bien été reçu!
+
+    Numéro de commnade: {{ order.order_number }}
+    If you think this is a mistake, please ignore this email.
+{% endautoescape %}

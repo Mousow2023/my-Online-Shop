@@ -3,6 +3,8 @@ from carts.models import CartItem
 from .forms import OrderForm
 from store.models import Product
 from .models import Order, Payment, OrderProduct
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 from django.contrib import messages
 import datetime
 import json
@@ -62,6 +64,15 @@ def payments(request):
     # Clear Cart
     CartItem.objects.filter(user=request.user).delete()
     
+    # Send order received email to consumer
+    email_subject = "Merci de Votre confiance"
+    message = render_to_string("orders/order_received_email.html", {
+        "user": request.user,
+        "order": order,        
+    })
+    to_email = request.user.email
+    send_email = EmailMessage(email_subject, message, to=[to_email])
+    send_email.send()
     return render(request, "orders/payments.html")
 
 @login_required(login_url="login")
