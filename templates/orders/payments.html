@@ -128,6 +128,7 @@
 
         const amount = '{{ total }}';
         const url = "{% url 'payments' %}";
+        const redirect_url = "{% url 'order_successful' %}";
         const csrftoken = getCookie('csrftoken');
         const orderID = '{{ order.order_number }}';
         const paymentMethod = 'Mobile Payment';
@@ -172,6 +173,10 @@
                                 status: details.status,
                             }),
                         })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            window.location.href = redirect_url + '?order_number='+data.order_number+'&payment_id='+data.transactionID;
+                        });
                     }
                 });
             }

@@ -5,6 +5,7 @@ from store.models import Product
 from .models import Order, Payment, OrderProduct
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.http import JsonResponse
 from django.contrib import messages
 import datetime
 import json
@@ -73,7 +74,14 @@ def payments(request):
     to_email = request.user.email
     send_email = EmailMessage(email_subject, message, to=[to_email])
     send_email.send()
-    return render(request, "orders/payments.html")
+
+    # Send order number and transaction id back to sendData method via JsonResponse
+    data = {
+        "order_number": order.order_number,
+        "transactionID": payment.payment_id,
+    }
+
+    return JsonResponse(data)
 
 @login_required(login_url="login")
 def place_order(request, total_price=0, quantity=0):
@@ -139,3 +147,6 @@ def place_order(request, total_price=0, quantity=0):
   
     return redirect("checkout")
 
+
+def order_successful(request):
+    return render(request, "orders/order_successful.html")
