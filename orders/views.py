@@ -149,4 +149,27 @@ def place_order(request, total_price=0, quantity=0):
 
 
 def order_successful(request):
-    return render(request, "orders/order_successful.html")
+    order_number = request.GET.get("order_number")
+    transactionID = request.GET.get("payment_id")
+
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        products_ordered = OrderProduct.objects.filter(order_id=order.id)
+
+        sub_total = 0
+        for ordered in products_ordered:
+            sub_total += (ordered.product.price * ordered.quantity)
+
+        payment = Payment.objects.get(payment_id=transactionID)
+
+        context = {
+            "order": order,
+            "products_ordered": products_ordered,
+            "transactionID": transactionID,
+            "payment": payment,
+            "order_number": payment.payment_id,
+            "sub_total": sub_total,
+        }
+        return render(request, "orders/order_successful.html", context)
+    except (Order.DoesNotExist, Payment.DoesNotExist):
+        return redirect("home")
