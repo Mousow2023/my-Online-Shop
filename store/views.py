@@ -53,11 +53,15 @@ def product_detail(request, category_slug, product_slug):
             ordered_product = False  # Set to False or None as needed
     else:
         ordered_product = False
+
+    # Get the review
+    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
     
     context = {
         "single_product": single_product,
         "in_cart": in_cart,
         "ordered_product": ordered_product,
+        "reviews": reviews,
     }
     return render(request, "store/product_detail.html", context)
 
