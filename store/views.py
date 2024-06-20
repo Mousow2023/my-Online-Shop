@@ -4,6 +4,7 @@ from .forms import ReviewForm
 from category.models import Category
 from carts.models import CartItem
 from carts.views import _get_cart_id
+from orders.models import OrderProduct
 
 from django.db.models import Q
 
@@ -43,10 +44,20 @@ def product_detail(request, category_slug, product_slug):
         in_cart = CartItem.objects.filter(cart__cart_id=_get_cart_id(request), product=single_product).exists()
     except Exception as e:
         raise e
+
+    ordered_product = None
+    if request.user.is_authenticated:
+        try:
+            ordered_product = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            ordered_product = False  # Set to False or None as needed
+    else:
+        ordered_product = False
     
     context = {
         "single_product": single_product,
         "in_cart": in_cart,
+        "ordered_product": ordered_product,
     }
     return render(request, "store/product_detail.html", context)
 
