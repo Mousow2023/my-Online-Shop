@@ -223,5 +223,11 @@ def reset_password(request):
         return render(request, "account/reset_password.html")
 
 
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by("-created_at")
 
+    context = {
+        "orders": orders,
+    }
+    return render(request, "account/my_orders.html", context)
 
