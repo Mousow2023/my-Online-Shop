@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegistrationForm, UserForm, ProfileForm
 from .models import Account, UserProfile
-from orders.models import Order
+from orders.models import Order, OrderProduct
 from django.contrib import messages, auth
 from django.http import HttpResponse
 from carts.models import Cart, CartItem
@@ -280,3 +280,20 @@ def change_password(request):
             return redirect("change_password")
         
     return render(request, "account/change_password.html")
+
+
+@login_required(login_url="login")
+def order_detail(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+
+    sub_total = 0
+    for ordered in order_detail:
+        sub_total += (ordered.product.price * ordered.quantity)
+
+    context = {
+        "order_detail": order_detail,
+        "order": order,
+        "sub_total": sub_total,
+    }
+    return render(request, "account/order_detail.html", context)
