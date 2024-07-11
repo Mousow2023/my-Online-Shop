@@ -98,6 +98,13 @@
                             <div id="paypal-button-container">
                                 {% comment %} Div for Paypal Button {% endcomment %}
                             </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="pay-after-delivery-button" class="btn btn-outline-primary btn-block">
+                                    Pay After Delivery
+                                </button>
+                            </div>
+
                         </div> <!-- card-body.// -->
                     </div> <!-- card.// -->
                 </aside> <!-- col.// -->
@@ -108,7 +115,7 @@
     </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
 
-     <script>
+    <script>
 
         function getCookie(name) {
             let cookieValue = null;
@@ -124,6 +131,15 @@
                 }
             }
             return cookieValue;
+        }
+
+        function generateUUID() {
+            // Generate a UUID
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0,
+                    v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
         }
 
         const amount = '{{ total }}';
@@ -158,28 +174,34 @@
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(details) {
                     console.log(details);
-                    sendData();
-                    function sendData() {
-                        fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrftoken
-                            },
-                            body: JSON.stringify({
-                                orderID: orderID,
-                                transactionID: details.id,
-                                paymentMethod: paymentMethod,
-                                status: details.status,
-                            }),
-                        })
-                        .then((response) => response.json())
-                        .then((data) => {
-                            window.location.href = redirect_url + '?order_number='+data.order_number+'&payment_id='+data.transactionID;
-                        });
-                    }
+                    sendData(details.id, details.status);
                 });
             }
         }).render('#paypal-button-container');
+
+        document.getElementById('pay-after-delivery-button').addEventListener('click', function() {
+            const transactionID = generateUUID();
+            sendData(transactionID, 'Pending');
+        });
+
+        function sendData(transactionID, status) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    orderID: orderID,
+                    transactionID: transactionID,
+                    paymentMethod: paymentMethod,
+                    status: status,
+                }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                window.location.href = redirect_url + '?order_number=' + data.order_number + '&payment_id=' + data.transactionID;
+            });
+        }
     </script>
 {% endblock content %}

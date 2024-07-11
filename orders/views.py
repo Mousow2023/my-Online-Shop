@@ -168,7 +168,7 @@ def order_successful(request):
             "products_ordered": products_ordered,
             "transactionID": transactionID,
             "payment": payment,
-            "order_number": payment.payment_id,
+            "order_number": order.order_number,
             "sub_total": sub_total,
         }
         return render(request, "orders/order_successful.html", context)
