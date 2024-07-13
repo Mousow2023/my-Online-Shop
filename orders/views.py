@@ -10,6 +10,8 @@ from django.contrib import messages
 import datetime
 import json
 from django.urls import reverse
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 
 from django.contrib.auth.decorators import login_required
 
@@ -65,15 +67,30 @@ def payments(request):
         
     # Clear Cart
     CartItem.objects.filter(user=request.user).delete()
+
+    # Fetch all order products related to the order
+    order_products = OrderProduct.objects.filter(order=order)
     
     # Send order received email to consumer
     email_subject = "Merci de Votre confiance"
-    message = render_to_string("orders/order_received_email.html", {
+    
+    # Render HTML content from template
+    html_message = render_to_string("orders/order_received_email.html", {
         "user": request.user,
-        "order": order,        
+        "order": order,
+        "order_products": order_products,
     })
-    to_email = request.user.email
-    send_email = EmailMessage(email_subject, message, to=[to_email])
+    
+    # Create a plain text version of the email
+    text_content = strip_tags(html_message)
+    
+    # Create EmailMultiAlternatives object
+    send_email = EmailMultiAlternatives(email_subject, text_content, to=[request.user.email])
+    
+    # Attach HTML content
+    send_email.attach_alternative(html_message, "text/html")
+    
+    # Send email
     send_email.send()
 
     # Send order number and transaction id back to sendData method via JsonResponse

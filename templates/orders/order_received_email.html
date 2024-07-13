@@ -1,7 +1,79 @@
 {% autoescape off %}
-    Hello {{ user.first_name }}
-    Votre commande a bien été reçu!
-
-    Numéro de commnade: {{ order.order_number }}
-    If you think this is a mistake, please ignore this email.
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Order Confirmation</h2>
+        </div>
+        <div class="content">
+            <!-- French Version -->
+            <p>Bonjour {{ user.first_name }},</p>
+            <p>Nous avons bien reçu votre commande <strong>{{ order.order_number }}</strong>. Merci pour votre achat !</p>
+            <p>Voici les détails de votre commande :</p>
+            <ul>
+                {% for order_product in order_products %}
+                    <li>{{ order_product.product.product_name }} - {{ order_product.quantity }} x {{ order_product.product_price }} FCFA</li>
+                {% endfor %}
+            </ul>
+            <p>Tax: {{ order.tax }} FCFA</p>
+            <p>Montant total: {{ order.order_total }} FCFA</p>
+            <p>Notre service client vous contactera sous peu pour vous assister jusqu'à ce que vous receviez votre commande.</p>
+            <p>Merci encore de votre confiance.</p>
+            <hr>
+            <!-- English Version -->
+            <p>Hello {{ user.first_name }},</p>
+            <p>We have received your order <strong>{{ order.order_number }}</strong>. Thank you for your purchase!</p>
+            <p>Here are the details of your order:</p>
+            <ul>
+                {% for order_product in order_products %}
+                    <li>{{ order_product.product.product_name }} - {{ order_product.quantity }} x {{ order_product.product_price }} FCFA</li>
+                {% endfor %}
+            </ul>
+            <p>Tax: {{ order.tax }} FCFA</p>
+            <p>Total amount: {{ order.order_total }} FCFA</p>
+            <p>Our customer service will contact you shortly to assist you until your order is delivered.</p>
+            <p>Thank you again for your trust.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} Moushop. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
 {% endautoescape %}
