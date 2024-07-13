@@ -94,6 +94,10 @@
                             <p class="text-center mb-3">
                                 <img src="{% static './images/misc/payments.png' %}" height="26">
                             </p>
+
+                            <div id="cinetpay-button-container" class="d-grid gap-2 mb-3">
+                                <!-- CinetPay button here -->
+                            </div>
                             
                             <div id="paypal-button-container">
                                 {% comment %} Div for Paypal Button {% endcomment %}
@@ -149,6 +153,9 @@
         const orderID = '{{ order.order_number }}';
         const paymentMethod = 'Mobile Payment';
 
+        const return_url = "{{ return_url }}";
+        const notify_url = "{{ notify_url }}";
+
         // Render the paypal button into the paypal button container
         paypal.Buttons({
 
@@ -174,17 +181,17 @@
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(details) {
                     console.log(details);
-                    sendData(details.id, details.status);
+                    sendData(details.id, details.status, 'PayPal');
                 });
             }
         }).render('#paypal-button-container');
 
         document.getElementById('pay-after-delivery-button').addEventListener('click', function() {
             const transactionID = generateUUID();
-            sendData(transactionID, 'Pending');
+            sendData(transactionID, 'Pending', 'After Delivery');
         });
 
-        function sendData(transactionID, status) {
+        function sendData(transactionID, status, methodOfPayemnt) {
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -194,7 +201,7 @@
                 body: JSON.stringify({
                     orderID: orderID,
                     transactionID: transactionID,
-                    paymentMethod: paymentMethod,
+                    paymentMethod: methodOfPayemnt,
                     status: status,
                 }),
             })
@@ -203,5 +210,43 @@
                 window.location.href = redirect_url + '?order_number=' + data.order_number + '&payment_id=' + data.transactionID;
             });
         }
+
+        function checkout() {
+            CinetPay.setConfig({
+                apikey: '94465734866817df9652626.15464973',
+                site_id: '5875041',
+                notify_url: notify_url,
+                mode: 'TEST'
+            });
+            console.log('Entering CinetPay.getCheckout');
+            CinetPay.getCheckout({
+                transaction_id: orderID,
+                amount: amount,
+                currency: 'XOF',
+                channels: 'MOBILE_MONEY,WALLET',
+                description: 'Order payment',
+                return_url: return_url
+            });
+            console.log('Entering CinetPay.waitResponse');
+            CinetPay.waitResponse(function(data) {
+                console.log('CinetPay Response:', data);
+                if (data.status == "REFUSED") {
+                    alert('Votre paiement a échoué');
+                    window.location.reload();
+                } else if (data.status == 'ACCEPTED') {
+                    alert('Votre paiement a été effectué avec succès');
+                    const transactionID = generateUUID();
+                    sendData(transactionID, 'Completed', 'CinetPay'); // Call sendData function with the response data
+                }
+            });
+            CinetPay.onError(function(data) {
+                console.log('CinetPay Error:', data);
+            });
+        }
+
+        document.getElementById('cinetpay-button-container').innerHTML = '<button onclick="checkout()" class="btn btn-success btn-block">Pay with CinetPay</button>';
     </script>
+
+
+
 {% endblock content %}

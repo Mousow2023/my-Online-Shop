@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 import datetime
 import json
+from django.urls import reverse
 
 from django.contrib.auth.decorators import login_required
 
@@ -86,6 +87,9 @@ def payments(request):
 
 @login_required(login_url="login")
 def place_order(request, total_price=0, quantity=0):
+    notify_url = request.build_absolute_uri(reverse('payments'))
+    return_url = request.build_absolute_uri(reverse('order_successful'))
+    
     current_user = request.user
 
     # Redirect the user to the store in there is not Cart Item in the Cart
@@ -139,6 +143,8 @@ def place_order(request, total_price=0, quantity=0):
                 "total": total,
                 "tax": tax,
                 "cart_items": cart_items,
+                "notify_url": notify_url,
+                "return_url": return_url,
             }
 
             return render(request, "orders/payments.html", context)
