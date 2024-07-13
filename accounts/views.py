@@ -14,6 +14,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
+
 
 
 from django.contrib.auth.decorators import login_required
@@ -27,34 +30,46 @@ def register(request):
             first_name = form.cleaned_data["first_name"]
             last_name = form.cleaned_data["last_name"]
             phone_number = form.cleaned_data["phone_number"]
-            email = form.cleaned_data["email"]
+            email_address = form.cleaned_data["email"]
+            
             password = form.cleaned_data["password"]
-            username = email.split("@")[0]
+            username = email_address.split("@")[0]
+            
             user = Account.objects.create_user(
-                first_name = first_name,
-                last_name = last_name,
-                username = username,
-                email = email,
-                password = password,
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email_address,
+                password=password,
             )
             user.phone_number = phone_number
             user.save()
 
-            # User verification
             current_site = get_current_site(request)
             email_subject = "Please verify your email"
-            message = render_to_string("account/account_verification_email.html", {
+            
+            # Render HTML content from template
+            html_message = render_to_string("account/account_verification_email.html", {
                 "user": user,
-                "domain": current_site,
+                "domain": current_site.domain,
                 "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                 "token": default_token_generator.make_token(user),
             })
-            to_email = email
-            send_email = EmailMessage(email_subject, message, to=[to_email])
-            send_email.send()
+            
+            # Create a plain text version of the email
+            text_content = strip_tags(html_message)
+            
+            # Create EmailMultiAlternatives object
+            email = EmailMultiAlternatives(email_subject, text_content, to=[email_address])
+            
+            # Attach HTML content
+            email.attach_alternative(html_message, "text/html")
+            
+            # Send email
+            email.send()
 
-            # messages.success(request, "Registration successful")
-            return redirect("/account/login/?command=verification&email"+email)
+            # Redirect after successful registration
+            return redirect(f"/account/login/?command=verification&email={email_address}")
         
     else:
         form = RegistrationForm()
