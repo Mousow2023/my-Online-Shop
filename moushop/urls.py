@@ -20,6 +20,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from . import views
+
+handler404 = views.custom_404_view
+handler500 = views.custom_500_view
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
