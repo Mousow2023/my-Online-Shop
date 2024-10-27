@@ -26,6 +26,10 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
+# Paypal keys
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+PAYPAL_CURRENCY = config('PAYPAL_CURRENCY', default='USD')
+
 ALLOWED_HOSTS = []
 
 
@@ -83,6 +87,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "category.context_processors.menu_links",
                 "carts.context_processors.counter",
+                # Custom context processor for PayPal
+                'orders.context_processors.paypal_settings',  
             ],
         },
     },

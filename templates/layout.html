@@ -8,7 +8,7 @@
 <meta http-equiv="cache-control" content="max-age=604800" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<title>GreatKart | One of the Biggest Online Shopping Platform</title>
+<title>SENECOM | SENEGAL'S Biggest Online Shopping Platform</title>
 
 <link href="{% static 'images/favicon.ico' %}" rel="shortcut icon" type="image/x-icon">
 
@@ -32,7 +32,20 @@
 <script src="{% static 'js/script.js' %}" type="text/javascript"></script>
 
 <!-- PayPal JavaScript SDK -->
-<script src="https://www.paypal.com/sdk/js?client-id=AaFnkJczEttEHZbNGWd5eh7XT4eqGYC3wRy9z7jZLpML2fzIHHo7o_CZJzbPyI0-enNObI_3sNoLo9Wh&currency=USD"></script>
+{% comment %} <script src="https://www.paypal.com/sdk/js?client-id=AaFnkJczEttEHZbNGWd5eh7XT4eqGYC3wRy9z7jZLpML2fzIHHo7o_CZJzbPyI0-enNObI_3sNoLo9Wh&currency=USD"></script> {% endcomment %}
+
+<!-- PayPal JavaScript SDK -->
+{% if PAYPAL_CLIENT_ID and PAYPAL_CURRENCY %}
+    <script>
+        const PAYPAL_CLIENT_ID = "{{ PAYPAL_CLIENT_ID }}";
+        const PAYPAL_CURRENCY = "{{ PAYPAL_CURRENCY }}";
+
+        const script = document.createElement("script");
+        script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=${PAYPAL_CURRENCY}`;
+        script.async = true;
+        document.head.appendChild(script);
+    </script>
+{% endif %}
 
 <!-- Cinetpay JavaScript SDK -->
  <script src="https://cdn.cinetpay.com/seamless/main.js"></script>
