@@ -15,20 +15,31 @@ from django.contrib import messages
 def store(request, category_slug=None):
     categories = None
     products = None
+    sizes = request.GET.getlist("sizes")  # Get list of selected sizes
+    min_price = request.GET.get("min_price")  # Get the minimum price
+    max_price = request.GET.get("max_price")  # Get the maximum price
 
     if category_slug is not None:
         categories = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=categories, is_available=True)
-        paginator = Paginator(products, 1)
-        page = request.GET.get("page")
-        paged_products = paginator.get_page(page)
-        products_count = products.count()
     else:
         products = Product.objects.all().filter(is_available=True).order_by("-created_date")
-        paginator = Paginator(products, 6)
-        page = request.GET.get("page")
-        paged_products = paginator.get_page(page)
-        products_count = products.count() or "No"
+
+    # Apply filtering by price range if provided
+    if min_price and min_price.isdigit():
+        products = products.filter(price__gte=int(min_price))
+    if max_price and max_price.isdigit():
+        products = products.filter(price__lte=int(max_price))
+
+    # Apply filtering by sizes if any are selected
+    if sizes:
+        products = products.filter(variation__variation_category="size", variation__variation_value__in=sizes).distinct()
+
+    # Paginate the filtered products
+    paginator = Paginator(products, 6)
+    page = request.GET.get("page")
+    paged_products = paginator.get_page(page)
+    products_count = products.count() or "No"
 
     context = {
         "products": paged_products,
