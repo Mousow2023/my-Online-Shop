@@ -1,2 +1,2 @@
 #!/bin/bash
-python manage.py collectstatic && gunicorn --workers 2 moushop.wsgi
+python manage.py collectstatic --noinput && gunicorn --workers 2 moushop.wsgi

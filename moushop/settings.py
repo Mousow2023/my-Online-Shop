@@ -30,7 +30,7 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 PAYPAL_CURRENCY = config('PAYPAL_CURRENCY', default='USD')
 
-ALLOWED_HOSTS = [".awsapprunner.com"]
+ALLOWED_HOSTS = ["https://mcy8fj53i6.us-east-2.awsapprunner.com/"]
 
 
 # Application definition
