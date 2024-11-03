@@ -205,7 +205,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 from django.contrib.messages import constants as messages
-from .secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
