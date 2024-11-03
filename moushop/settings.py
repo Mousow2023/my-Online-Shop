@@ -31,7 +31,7 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 PAYPAL_CURRENCY = config('PAYPAL_CURRENCY', default='USD')
 
-ALLOWED_HOSTS = ["senecom.us-east-1.elasticbeanstalk.com/"]
+ALLOWED_HOSTS = ["senecom.us-east-1.elasticbeanstalk.com"]
 
 
 # Application definition
