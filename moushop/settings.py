@@ -32,7 +32,7 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 PAYPAL_CURRENCY = config('PAYPAL_CURRENCY', default='USD')
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "senecom.onrender.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "sencommerce.onrender.com"]
 
 
 # Application definition
